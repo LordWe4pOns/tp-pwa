@@ -1,0 +1,22 @@
+# Configuration de déploiement Netlify pour CollecBox PWA
+
+[build]
+  publish = "."
+
+# En-têtes HTTP de sécurité, SEO et gestion de cache PWA
+[[headers]]
+  for = "/*.md"
+  [headers.values]
+    X-Robots-Tag = "noindex"
+
+# Le Service Worker ne doit jamais être mis en cache par le CDN Netlify
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+# Manifeste PWA avec bon type MIME
+[[headers]]
+  for = "/manifest.json"
+  [headers.values]
+    Content-Type = "application/manifest+json; charset=utf-8"

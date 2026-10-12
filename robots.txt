@@ -1,0 +1,20 @@
+# robots.txt — Directives d'indexation pour CollecBox
+User-agent: *
+Allow: /
+
+# Directives ciblées pour les crawlers d'agents IA
+User-agent: GPTBot
+Allow: /            # Permet à OpenAI de citer et référencer les fiches publiques de collection
+
+User-agent: ClaudeBot
+Allow: /            # Permet à Claude (Anthropic) de lire l'inventaire public et notes.md
+
+User-agent: PerplexityBot
+Allow: /            # Permet à Perplexity de sourcer l'application dans les moteurs de réponse
+
+User-agent: Google-Extended
+Disallow: /         # Bloque l'aspiration des données pour l'entraînement des modèles Gemini (la recherche Google Search reste active)
+
+# Ressources de découverte sémantique
+Sitemap: https://collecbox.vercel.app/sitemap.xml
+# llms.txt : https://collecbox.vercel.app/llms.txt

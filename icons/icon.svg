@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#4f46e5" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Arrière-plan arrondi -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+
+  <!-- Symbole du Vinyle / Collection -->
+  <g filter="url(#shadow)">
+    <!-- Disque externe -->
+    <circle cx="256" cy="256" r="160" fill="rgba(255, 255, 255, 0.12)" stroke="#ffffff" stroke-width="8" />
+    
+    <!-- Sillon 1 -->
+    <circle cx="256" cy="256" r="128" fill="none" stroke="rgba(255, 255, 255, 0.45)" stroke-width="4" stroke-dasharray="16 8" />
+    
+    <!-- Sillon 2 -->
+    <circle cx="256" cy="256" r="96" fill="none" stroke="rgba(255, 255, 255, 0.35)" stroke-width="3" />
+    
+    <!-- Centre Macaron (Ambre chaud) -->
+    <circle cx="256" cy="256" r="56" fill="#f59e0b" stroke="#ffffff" stroke-width="6" />
+    
+    <!-- Trou central -->
+    <circle cx="256" cy="256" r="18" fill="#3b82f6" stroke="#ffffff" stroke-width="4" />
+
+    <!-- Gemme de collectionneur (Émeraude) -->
+    <circle cx="360" cy="152" r="32" fill="#10b981" stroke="#ffffff" stroke-width="6" />
+    <path d="M352 144 L368 144 L364 160 L356 160 Z" fill="#ffffff" opacity="0.9" />
+  </g>
+</svg>

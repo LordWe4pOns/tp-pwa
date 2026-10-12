@@ -1,25 +1,18 @@
 #!/usr/bin/env python3
 """
 Générateur d'icônes PWA pour CollecBox / ExLibris
-Produit les icônes PNG 192x192, 512x512 et leurs variantes maskables.
+Produit les icônes PNG 64, 128, 192, 256, 512 et leurs variantes maskables.
 """
-from PIL import Image, ImageDraw, ImageFont
-import math
+from PIL import Image, ImageDraw
 import os
 
 def create_icon(size, is_maskable=False):
-    # Image RGBA
     img = Image.new('RGBA', (size, size), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(img)
-
-    # Dégradé de fond
-    # Couleurs : Bleu électrique #3b82f6 (59, 130, 246) vers Indigo #4f46e5 (79, 70, 229)
     c1 = (59, 130, 246)
     c2 = (79, 70, 229)
 
     corner_radius = 0 if is_maskable else int(size * 0.22)
     
-    # Créer un masque arrondi ou plein
     mask = Image.new('L', (size, size), 0)
     mask_draw = ImageDraw.Draw(mask)
     if is_maskable:
@@ -27,7 +20,6 @@ def create_icon(size, is_maskable=False):
     else:
         mask_draw.rounded_rectangle([0, 0, size, size], radius=corner_radius, fill=255)
 
-    # Remplissage par dégradé
     grad = Image.new('RGBA', (size, size))
     grad_draw = ImageDraw.Draw(grad)
     for y in range(size):
@@ -39,15 +31,13 @@ def create_icon(size, is_maskable=False):
 
     img.paste(grad, (0, 0), mask)
 
-    # Zone de contenu (safe area pour maskable : 80% du centre)
     scale = 0.65 if is_maskable else 0.75
     cx, cy = size // 2, size // 2
     r_outer = int((size * scale) // 2)
 
     icon_draw = ImageDraw.Draw(img)
 
-    # Dessin d'un symbole stylisé : Vinyle + Étagère / Box
-    # 1. Disque vinyle (cercle blanc semi-transparent avec sillons)
+    # 1. Disque vinyle
     icon_draw.ellipse(
         [cx - r_outer, cy - r_outer, cx + r_outer, cy + r_outer],
         fill=(255, 255, 255, 35),
@@ -63,11 +53,11 @@ def create_icon(size, is_maskable=False):
         width=max(1, size // 100)
     )
 
-    # Centre du vinyle (pastille colorée cyan/ambre)
+    # Centre du vinyle
     r_inner = int(r_outer * 0.38)
     icon_draw.ellipse(
         [cx - r_inner, cy - r_inner, cx + r_inner, cy + r_inner],
-        fill=(245, 158, 11, 240),  # Ambre
+        fill=(245, 158, 11, 240),
         outline=(255, 255, 255, 240),
         width=max(2, size // 80)
     )
@@ -81,13 +71,13 @@ def create_icon(size, is_maskable=False):
         width=max(1, size // 120)
     )
 
-    # Badge étoile / gemme en haut à droite
+    # Badge gemme
     star_x = cx + int(r_outer * 0.65)
     star_y = cy - int(r_outer * 0.65)
     star_r = int(r_outer * 0.28)
     icon_draw.ellipse(
         [star_x - star_r, star_y - star_r, star_x + star_r, star_y + star_r],
-        fill=(16, 185, 129, 255),  # Emeraude
+        fill=(16, 185, 129, 255),
         outline=(255, 255, 255, 255),
         width=max(2, size // 80)
     )
@@ -99,17 +89,10 @@ if __name__ == '__main__':
     icons_dir = os.path.join(base_dir, 'icons')
     os.makedirs(icons_dir, exist_ok=True)
 
-    # Génération
-    img_192 = create_icon(192, is_maskable=False)
-    img_192.save(os.path.join(icons_dir, 'icon-192.png'), 'PNG')
+    for sz in [64, 128, 192, 256, 512]:
+        create_icon(sz, is_maskable=False).save(os.path.join(icons_dir, f'icon-{sz}.png'), 'PNG')
+    
+    create_icon(192, is_maskable=True).save(os.path.join(icons_dir, 'icon-192-maskable.png'), 'PNG')
+    create_icon(512, is_maskable=True).save(os.path.join(icons_dir, 'icon-512-maskable.png'), 'PNG')
 
-    img_512 = create_icon(512, is_maskable=False)
-    img_512.save(os.path.join(icons_dir, 'icon-512.png'), 'PNG')
-
-    img_192_m = create_icon(192, is_maskable=True)
-    img_192_m.save(os.path.join(icons_dir, 'icon-192-maskable.png'), 'PNG')
-
-    img_512_m = create_icon(512, is_maskable=True)
-    img_512_m.save(os.path.join(icons_dir, 'icon-512-maskable.png'), 'PNG')
-
-    print("✅ Icônes PNG générées avec succès dans icons/")
+    print("✅ Icônes PNG (64, 128, 192, 256, 512) générées avec succès dans icons/")

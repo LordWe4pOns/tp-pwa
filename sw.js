@@ -3,7 +3,7 @@
  * Gestion du Cache Shell, Stratégies de requêtes et Background Sync
  */
 
-const CACHE_NAME = 'collecbox-v2';
+const CACHE_NAME = 'collecbox-v3';
 
 const APP_SHELL = [
   '/',
@@ -14,8 +14,13 @@ const APP_SHELL = [
   '/offline.html',
   '/notes.md',
   '/icons/icon.svg',
+  '/icons/icon-64.png',
+  '/icons/icon-128.png',
   '/icons/icon-192.png',
+  '/icons/icon-192-maskable.png',
+  '/icons/icon-256.png',
   '/icons/icon-512.png',
+  '/icons/icon-512-maskable.png',
   'https://cdn.jsdelivr.net/npm/idb@8/build/umd.js',
 ];
 

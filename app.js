@@ -459,17 +459,25 @@ window.addEventListener('beforeinstallprompt', (e) => {
 
 elements.btnInstall.addEventListener('click', async () => {
   if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  const { outcome } = await deferredPrompt.userChoice;
-  if (outcome === 'accepted') {
-    showToast('🎉 Merci d\'avoir installé CollecBox !');
+  try {
+    await deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      showToast('🎉 Merci d\'avoir installé CollecBox !');
+      elements.btnInstall.hidden = true;
+      deferredPrompt = null;
+    } else {
+      showToast('Installation reportée.');
+    }
+  } catch (err) {
+    console.warn('Erreur prompt installation:', err);
+    showToast('⚠️ Vous pouvez aussi installer l\'application via le menu du navigateur (⋮ > Installer).');
   }
-  deferredPrompt = null;
-  elements.btnInstall.hidden = true;
 });
 
 window.addEventListener('appinstalled', () => {
   elements.btnInstall.hidden = true;
+  deferredPrompt = null;
   showToast('CollecBox est désormais installée sur votre écran d\'accueil.');
 });
 

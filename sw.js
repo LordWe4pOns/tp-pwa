@@ -3,7 +3,7 @@
  * Gestion du Cache Shell, Stratégies de requêtes et Background Sync
  */
 
-const CACHE_NAME = 'collecbox-v4';
+const CACHE_NAME = 'collecbox-v5';
 
 const APP_SHELL = [
   '/',
@@ -195,6 +195,7 @@ async function syncOutboxInSW() {
 
         console.log(`SW Sync: ${outboxItems.length} élément(s) à synchroniser.`);
 
+        let syncedCount = 0;
         for (const item of outboxItems) {
           try {
             const response = await fetch('https://httpbin.org/post', {
@@ -213,6 +214,7 @@ async function syncOutboxInSW() {
               // Suppression de l'élément synchronisé
               const deleteTx = db.transaction('outbox', 'readwrite');
               deleteTx.objectStore('outbox').delete(item.id);
+              syncedCount++;
             }
           } catch (err) {
             console.warn('SW Sync: échec de l\'envoi réseau', err);
@@ -220,6 +222,18 @@ async function syncOutboxInSW() {
             break;
           }
         }
+
+        // Si des éléments ont été synchronisés avec succès et que la permission est accordée
+        if (syncedCount > 0 && self.Notification && Notification.permission === 'granted') {
+          self.registration.showNotification('CollecBox — Synchronisation terminée 🌐', {
+            body: `${syncedCount} objet(s) ajouté(s) hors ligne ont été synchronisés avec succès !`,
+            icon: '/icons/icon-192.png',
+            badge: '/icons/icon-64.png',
+            tag: 'sync-notification',
+            data: { url: '/' },
+          });
+        }
+
         resolve();
       };
 
@@ -227,3 +241,35 @@ async function syncOutboxInSW() {
     };
   });
 }
+
+// 6. Gestion du clic sur une notification système
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const targetUrl = event.notification.data?.url || '/';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url.includes(self.location.origin) && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
+    })
+  );
+});
+
+// 7. Support Web Push distant standard (Bonus)
+self.addEventListener('push', (event) => {
+  const data = event.data ? event.data.json() : {};
+  const title = data.title || 'CollecBox — Notification';
+  const options = {
+    body: data.body || 'Une mise à jour de votre collection est disponible.',
+    icon: '/icons/icon-192.png',
+    badge: '/icons/icon-64.png',
+    data: { url: data.url || '/' },
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});

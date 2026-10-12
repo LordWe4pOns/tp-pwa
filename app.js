@@ -52,6 +52,8 @@ const elements = {
   btnCloseScanner: document.getElementById('btn-close-scanner'),
   btnStopScanner: document.getElementById('btn-stop-scanner'),
   toastContainer: document.getElementById('toast-container'),
+  btnNotif: document.getElementById('btn-notif'),
+  notifLabel: document.getElementById('notif-label'),
 };
 
 function showToast(message, duration = 3500) {
@@ -237,6 +239,7 @@ async function flushOutbox() {
 
   if (outboxItems.length === 0) return;
 
+  let syncedCount = 0;
   for (const item of outboxItems) {
     try {
       const res = await fetch('https://httpbin.org/post', {
@@ -254,6 +257,7 @@ async function flushOutbox() {
 
       if (res.ok) {
         await db.delete('outbox', item.id);
+        syncedCount++;
       }
     } catch (err) {
       console.warn('Échec de synchronisation outbox pour l\'élément', item.id, err);
@@ -264,8 +268,21 @@ async function flushOutbox() {
 
   await renderCollection();
   const remaining = await db.count('outbox');
-  if (remaining === 0) {
+  if (remaining === 0 && syncedCount > 0) {
     showToast('🌐 Toutes vos créations sont synchronisées avec le serveur !');
+    if ('Notification' in window && Notification.permission === 'granted') {
+      try {
+        const reg = await navigator.serviceWorker.ready;
+        reg.showNotification('CollecBox — Synchronisation terminée 🌐', {
+          body: `${syncedCount} objet(s) hors ligne synchronisé(s) avec succès !`,
+          icon: '/icons/icon-192.png',
+          badge: '/icons/icon-64.png',
+          tag: 'sync-notification',
+        });
+      } catch (err) {
+        console.debug('Notification push err:', err);
+      }
+    }
   }
 }
 
@@ -523,11 +540,77 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+// 11bis. Gestion des Notifications de Synchronisation (Bonus PWA)
+function updateNotificationButtonUI() {
+  if (!('Notification' in window) || !elements.btnNotif) {
+    if (elements.btnNotif) elements.btnNotif.hidden = true;
+    return;
+  }
+
+  if (Notification.permission === 'granted') {
+    elements.btnNotif.classList.remove('btn-outline');
+    elements.btnNotif.classList.add('btn-success');
+    if (elements.notifLabel) elements.notifLabel.textContent = 'Alertes actives';
+    elements.btnNotif.title = 'Les alertes de synchronisation sont actives';
+  } else if (Notification.permission === 'denied') {
+    elements.btnNotif.classList.remove('btn-success');
+    elements.btnNotif.classList.add('btn-outline');
+    if (elements.notifLabel) elements.notifLabel.textContent = 'Alertes bloquées';
+    elements.btnNotif.title = 'Notifications bloquées dans les paramètres de votre navigateur';
+  } else {
+    elements.btnNotif.classList.remove('btn-success');
+    elements.btnNotif.classList.add('btn-outline');
+    if (elements.notifLabel) elements.notifLabel.textContent = 'Alertes de synchro';
+    elements.btnNotif.title = 'Cliquez pour activer les alertes de synchronisation hors ligne';
+  }
+}
+
+async function handleNotificationToggle() {
+  if (!('Notification' in window)) {
+    showToast('⚠️ Votre navigateur ne supporte pas les notifications.');
+    return;
+  }
+
+  if (Notification.permission === 'granted') {
+    showToast('🔔 Les alertes sont déjà activées.');
+    return;
+  }
+
+  if (Notification.permission === 'denied') {
+    showToast('⚠️ Notifications bloquées dans les paramètres du navigateur.');
+    return;
+  }
+
+  try {
+    const permission = await Notification.requestPermission();
+    updateNotificationButtonUI();
+    if (permission === 'granted') {
+      showToast('🔔 Alertes activées ! Vous serez notifié dès qu\'un ajout hors ligne sera synchronisé.');
+      if ('serviceWorker' in navigator) {
+        const reg = await navigator.serviceWorker.ready;
+        reg.showNotification('CollecBox — Alertes actives 🔔', {
+          body: 'Vous recevrez une alerte quand vos ajouts hors ligne seront synchronisés.',
+          icon: '/icons/icon-192.png',
+          badge: '/icons/icon-64.png',
+          tag: 'welcome-notification',
+        });
+      }
+    } else {
+      showToast('Notifications non activées.');
+    }
+  } catch (err) {
+    console.error('Erreur demande notifications:', err);
+  }
+}
+
 // 12. Événements des éléments du DOM
 elements.btnScan.addEventListener('click', startBarcodeScanner);
 elements.btnCloseScanner.addEventListener('click', stopBarcodeScanner);
 elements.btnStopScanner.addEventListener('click', stopBarcodeScanner);
 elements.btnShare.addEventListener('click', shareCollection);
+if (elements.btnNotif) {
+  elements.btnNotif.addEventListener('click', handleNotificationToggle);
+}
 
 elements.itemForm.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -546,5 +629,6 @@ elements.itemForm.addEventListener('submit', async (e) => {
 // Initialisation au chargement de la page
 window.addEventListener('DOMContentLoaded', () => {
   updateNetworkStatus();
+  updateNotificationButtonUI();
   hydrateInitialSeeds();
 });

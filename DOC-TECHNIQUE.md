@@ -141,14 +141,20 @@ Pour cette version 1 monoposte/monocouche, le risque de collision concurrente es
 |---|---|---|---|
 | **Caméra (`getUserMedia`) & `BarcodeDetector`** | Uniquement au clic explicite sur *"Scanner un code-barres"*. | Respect scrupuleux des directives UX : aucune demande de permission intempestive au chargement initial du site. | Détection de l'erreur `NotAllowedError`. Fermeture du viseur et affichage d'un toast informatif bienveillant : *"⚠️ Accès caméra refusé. Vous pouvez saisir le code-barres manuellement dans le formulaire."*, avec focus automatique sur le champ EAN. |
 | **Web Share API (`navigator.share`)** | Uniquement au clic explicite sur *"Partager ma collection"*. | L'utilisateur souhaite communiquer sa liste à un ami ou sur un réseau social. | Repli automatique transparent vers `navigator.clipboard.writeText()` pour copier le lien dans le presse-papiers avec toast de confirmation. |
-| **Web App Install Prompt (`beforeinstallprompt`)** | Lors de l'événement système du navigateur, matérialisé par le bouton *"📲 Installer l'application"*. | Laisse l'utilisateur maître de l'installation sur son écran d'accueil sans popup intrusive bloquant la vue. | Le bouton d'installation disparaît sans insister. |
+| **Web App Install Prompt (`beforeinstallprompt`)** | Lors de l'événement système du navigateur, matérialisé par le bouton *"📲 Installer"*. | Laisse l'utilisateur maître de l'installation sur son écran d'accueil sans popup intrusive bloquant la vue. | Le bouton d'installation disparaît sans insister. |
+| **Notifications système (`Notification API`)** | Uniquement au clic sur le bouton *"🔔 Alertes de synchro"*. | Respect du consentement : demandée suite à un geste explicite pour être alerté de la fin de synchronisation hors ligne. | Affichage *"Alertes bloquées"* sur le bouton, repli automatique sur les toasts visuels in-app sans erreur. |
 
 ---
 
 ## 8. Notifications
 
-- **Choix en v1** : Aucune notification Push distante activée, mais des **notifications locales in-app (Toasts)** personnalisées.
-- **Justification** : Demander la permission de notification pour un simple gestionnaire d'inventaire personnel sans réseau social serait perçu comme intrusif et suspect par l'utilisateur (dark pattern). Les retours d'état (mode hors ligne, scan réussi, synchronisation effectuée, copie dans le presse-papiers) sont intégralement communiqués via le conteneur visuel `#toast-container` sans solliciter de permission sensible du système d'exploitation.
+- **Implémentation (Bonus TP)** : Notifications système via Service Worker (`self.registration.showNotification`) et écouteur distant Web Push standard (`push`).
+- **Cas d'usage & valeur ajoutée** : L'utilisateur ajoute un objet en convention ou brocante en mode hors ligne, puis range son téléphone et ferme l'application. Dès que l'appareil capte à nouveau du réseau, l'API Background Sync s'exécute en arrière-plan et déclenche la notification système :
+  > **"CollecBox — Synchronisation terminée 🌐"**  
+  > *1 objet(s) ajouté(s) hors ligne ont été synchronisés avec succès !*
+- **Moment de demande de permission** : Conforme aux règles d'or UX : aucune popup intempestive au premier chargement. L'utilisateur clique sur le bouton dédié de l'en-tête *"🔔 Alertes de synchro"* pour accorder la permission (`Notification.requestPermission()`). Une suggestion contextuelle est également proposée sous forme de toast bienveillant lors d'un ajout hors ligne si la permission n'a pas encore été définie.
+- **Action au clic** : L'écouteur `notificationclick` du Service Worker ferme la notification et refocalise ou rouvre instantanément l'application (`clients.matchAll` / `clients.openWindow`).
+- **Si refus** : Le bouton de l'en-tête affiche *"Alertes bloquées"* et les retours continuent de s'effectuer de manière transparente via les toasts in-app sans bloquer aucune fonctionnalité.
 
 ---
 

@@ -8,6 +8,12 @@
   for = "/*.md"
   [headers.values]
     X-Robots-Tag = "noindex"
+    Content-Type = "text/markdown; charset=utf-8"
+
+[[headers]]
+  for = "/llms.txt"
+  [headers.values]
+    Content-Type = "text/plain; charset=utf-8"
 
 # Le Service Worker ne doit jamais être mis en cache par le CDN Netlify
 [[headers]]

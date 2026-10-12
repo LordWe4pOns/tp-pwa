@@ -1,6 +1,6 @@
 # CollecBox — Technical Design Doc
 
-**Auteur** : Étudiant M2 Informatique · **Date** : 12 octobre 2026 · **URL de production** : https://collecbox.vercel.app · **Dépôt** : https://github.com/votre-compte/collecbox · **Statut** : Final
+**Auteur** : Étudiant M2 Informatique · **Date** : 12 octobre 2026 · **URL de production** : https://collecbox.netlify.app/ · **Dépôt** : https://github.com/LordWe4pOns/tp-pwa · **Statut** : Final
 
 ---
 

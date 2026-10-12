@@ -488,18 +488,27 @@ if ('serviceWorker' in navigator) {
       const registration = await navigator.serviceWorker.register('/sw.js');
       console.log('✅ Service Worker enregistré avec le scope :', registration.scope);
 
-      // Détection des mises à jour du Service Worker
+      function showUpdateBanner(worker) {
+        elements.updateBanner.hidden = false;
+        elements.btnUpdate.onclick = () => {
+          worker.postMessage({ type: 'SKIP_WAITING' });
+        };
+      }
+
+      // 1. Si un nouveau Service Worker est déjà en attente
+      if (registration.waiting && navigator.serviceWorker.controller) {
+        showUpdateBanner(registration.waiting);
+      }
+
+      // 2. Détection d'un nouveau Service Worker en cours d'installation
       registration.addEventListener('updatefound', () => {
         const newWorker = registration.installing;
         if (!newWorker) return;
 
         newWorker.addEventListener('statechange', () => {
           if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            // Un nouveau SW a été téléchargé et attend
-            elements.updateBanner.hidden = false;
-            elements.btnUpdate.onclick = () => {
-              newWorker.postMessage({ type: 'SKIP_WAITING' });
-            };
+            // Nouveau SW prêt et en attente
+            showUpdateBanner(newWorker);
           }
         });
       });

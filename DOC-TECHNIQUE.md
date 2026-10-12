@@ -163,7 +163,7 @@ Pour cette version 1 monoposte/monocouche, le risque de collision concurrente es
 ### Contenu HTML initial vs IndexedDB
 - Pour satisfaire les bots qui n'exécutent pas JavaScript ou n'installent pas de Service Worker (crawlers Googlebot, GPTBot, ClaudeBot) :
   - Le document `index.html` contient dès sa réception par le réseau les balises sémantiques `<main>`, `<h1>`, la description textuelle du service, et **3 éléments réels d'exemple** balisés avec l'attribut `data-seed` (le vinyle Daft Punk, le manga One Piece et le jeu Zelda).
-  - La commande `curl -s -A "GPTBot" https://collecbox.vercel.app/ | grep -c "<li[ >]"` retourne **3**, garantissant l'indexabilité immédiate du contenu.
+  - La commande `curl -s -A "GPTBot" https://collecbox.netlify.app/ | grep -c "<li[ >]"` retourne **3**, garantissant l'indexabilité immédiate du contenu.
 - Au premier lancement client, le script `app.js` détecte `if (await db.count('items') === 0)` et hydrate IndexedDB à partir de ces graines du DOM, avant de basculer sur un rendu dynamique sécurisé (`textContent`).
 
 ### Fichiers de découverte sémantique
@@ -180,7 +180,7 @@ Pour cette version 1 monoposte/monocouche, le risque de collision concurrente es
 
 ## 10. Sécurité et vie privée
 
-- **Isolation d'origine (Origin)** : Données IndexedDB confinées au domaine d'origine de la PWA (`collecbox.vercel.app` ou `localhost`).
+- **Isolation d'origine (Origin)** : Données IndexedDB confinées au domaine d'origine de la PWA (`collecbox.netlify.app` ou `localhost`).
 - **Zéro secret côté client** : Aucun token privé, clé d'API ou secret d'authentification n'est embarqué dans le code frontend ou le Service Worker.
 - **Protection XSS** : Toutes les insertions dynamiques dans le DOM sont effectuées au moyen de `document.createElement`, `textContent` et `replaceChildren`, proscrivant strictement `innerHTML` sur les chaînes saisies par l'utilisateur.
 - **En-têtes HTTP posés (`_headers` / `serve.json`)** :

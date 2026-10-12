@@ -9,10 +9,10 @@
 - **Architecture** : Progressive Web App (PWA) Local-First, Vanilla JS + IndexedDB (`idb` v8).
 
 ## Fichiers et URLs
-- [Accueil de l'application](https://collecbox.vercel.app/) : Interface complète avec App Shell, scan de codes-barres et inventaire dynamique.
-- [Notes publiques en Markdown](https://collecbox.vercel.app/notes.md) : Version texte Markdown synchrone du contenu public et des 3 éléments d'exemple.
-- [Manifest PWA](https://collecbox.vercel.app/manifest.json) : Déclaration d'installation pour écran d'accueil.
-- [Page de secours hors ligne](https://collecbox.vercel.app/offline.html) : Fallback servi par le Service Worker lors d'échecs de navigation.
+- [Accueil de l'application](https://collecbox.netlify.app/) : Interface complète avec App Shell, scan de codes-barres et inventaire dynamique.
+- [Notes publiques en Markdown](https://collecbox.netlify.app/notes.md) : Version texte Markdown synchrone du contenu public et des 3 éléments d'exemple.
+- [Manifest PWA](https://collecbox.netlify.app/manifest.json) : Déclaration d'installation pour écran d'accueil.
+- [Page de secours hors ligne](https://collecbox.netlify.app/offline.html) : Fallback servi par le Service Worker lors d'échecs de navigation.
 
 ## Objets d'exemple référencés
 1. **Vinyle** : Random Access Memories — Daft Punk (Double LP 33T, 2013, EAN: 888837168618).
@@ -21,6 +21,6 @@
 
 ## Spécifications Techniques
 - **Stockage local** : Base IndexedDB `collecbox-db` v1 avec les stores `items` et `outbox`.
-- **Service Worker** : Mise en cache de l'App Shell (`collecbox-v1`), Cache-First sur assets statiques, Stale-While-Revalidate sur librairies CDN, et page offline dédiée.
+- **Service Worker** : Mise en cache de l'App Shell (`collecbox-v6`), Cache-First sur assets statiques, Stale-While-Revalidate sur librairies CDN, et page offline dédiée.
 - **Capacités matérielles** : BarcodeDetector API (scan caméra EAN-13, EAN-8) et Web Share API avec fallback presse-papiers.
 - **Synchronisation différée** : Outbox pattern avec envoi vers un endpoint REST (`https://httpbin.org/post`) via Background Sync et écouteur de repli `window.online`.

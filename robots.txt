@@ -16,5 +16,5 @@ User-agent: Google-Extended
 Disallow: /         # Bloque l'aspiration des données pour l'entraînement des modèles Gemini (la recherche Google Search reste active)
 
 # Ressources de découverte sémantique
-Sitemap: https://collecbox.vercel.app/sitemap.xml
-# llms.txt : https://collecbox.vercel.app/llms.txt
+Sitemap: https://collecbox.netlify.app/sitemap.xml
+# llms.txt : https://collecbox.netlify.app/llms.txt

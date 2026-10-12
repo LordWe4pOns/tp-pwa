@@ -3,7 +3,7 @@
  * Gestion du Cache Shell, Stratégies de requêtes et Background Sync
  */
 
-const CACHE_NAME = 'collecbox-v5';
+const CACHE_NAME = 'collecbox-v6';
 
 const APP_SHELL = [
   '/',

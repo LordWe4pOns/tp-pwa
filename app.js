@@ -287,25 +287,31 @@ async function flushOutbox() {
 }
 
 async function requestSync() {
-  if (!navigator.onLine) {
-    showToast('📴 Hors ligne : objet conservé localement, synchronisation en attente.');
-    return;
-  }
-
+  // 1. Enregistrement auprès de l'API Background Sync du navigateur
+  // C'est capital : c'est CE mécanisme qui réveille le Service Worker quand l'onglet est fermé !
   if ('serviceWorker' in navigator) {
     try {
       const reg = await navigator.serviceWorker.ready;
       if ('sync' in reg) {
-        // Chromium Background Sync
         await reg.sync.register('sync-items');
-        return;
+        console.log('✅ Background Sync enregistré pour le tag "sync-items"');
+        if (!navigator.onLine) {
+          showToast('📴 Sauvegardé hors ligne : le navigateur synchronisera en arrière-plan au retour du réseau.');
+          return;
+        }
       }
     } catch (err) {
-      console.warn('Background sync registration failed:', err);
+      console.warn('Échec enregistrement Background sync:', err);
     }
   }
 
-  // Fallback universel : synchro directe depuis le thread principal
+  // 2. Si hors ligne et pas de Background Sync (Firefox/Safari)
+  if (!navigator.onLine) {
+    showToast('📴 Sauvegardé hors ligne : synchronisation en attente de reconnexion.');
+    return;
+  }
+
+  // 3. Si en ligne, synchronisation immédiate
   await flushOutbox();
 }
 

@@ -1,0 +1,13 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "corsica.universita.collecbox",
+      "sha256_cert_fingerprints": [
+        "14:6D:E9:7D:01:A0:EA:62:38:09:A6:CF:7E:6F:09:44:E2:03:62:00:1E:54:39:1A:E6:48:75:A0:A6:49:15:37"
+      ]
+    }
+  }
+]
+

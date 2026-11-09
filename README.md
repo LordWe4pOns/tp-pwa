@@ -1,16 +1,17 @@
 # CollecBox — PWA Gestionnaire de collection
 
 > Progressive Web App développée pour le cours de M2 Informatique (Université de Corse, 2026).
-> Sujet : **"CollecBox" — Gestionnaire de collection (Vinyles, Mangas, Jeux vidéo, BD)**
+> Sujet : **"CollecBox" — Gestionnaire de collection (Vinyles, Mangas, Jeux vidéo, BD)**  
+> 🌐 **URL de production** : [https://collecbox.netlify.app](https://collecbox.netlify.app)
 
 ---
 
 ## 🚀 Démarrage rapide en local
 
-Pour tester la PWA avec son Service Worker, le Manifest et la page hors ligne, lancez un serveur HTTP local dans le dossier `exlibris/` :
+Pour tester la PWA avec son Service Worker, le Manifest et la page hors ligne, lancez un serveur HTTP local dans le dossier `collecbox/` :
 
 ```bash
-cd exlibris
+cd collecbox
 
 # Avec npx serve (prend en compte serve.json pour cleanUrls: false)
 npx serve -l 3000
@@ -42,7 +43,12 @@ curl -sI http://localhost:3000/notes.md | grep -i "x-robots"
 # Résultat attendu : x-robots-tag: noindex
 ```
 
-### 4. Test du mode hors ligne
+### 4. Test du fichier llms.txt (Agents IA)
+```bash
+curl -s http://localhost:3000/llms.txt | head -n 10
+```
+
+### 5. Test du mode hors ligne
 1. Ouvrez l'application dans Chrome/Firefox/Edge.
 2. Ouvrez les DevTools (F12) → Onglet **Application** (ou **Réseau**).
 3. Cochez **Offline** (Mode hors ligne).
@@ -55,9 +61,12 @@ curl -sI http://localhost:3000/notes.md | grep -i "x-robots"
 ## 📁 Arborescence des fichiers
 
 ```text
-exlibris/
+collecbox/
+├── .well-known/           # Configuration Android Digital Asset Links (TWA)
+│   └── assetlinks.json    # Empreinte SHA-256 pour validation App Links
 ├── DOC-TECHNIQUE.md       # Document de conception technique complet (12 sections)
 ├── README.md              # Guide d'exécution et de test
+├── _headers               # En-têtes HTTP pour déploiement Netlify
 ├── app.js                 # Logique métier, IndexedDB idb v8, scanner caméra, Outbox
 ├── generate_icons.py      # Script de génération des icônes PNG
 ├── icons/                 # Icônes de l'application
@@ -69,20 +78,23 @@ exlibris/
 ├── index.html             # App Shell, balises SEO/GEO, 3 graines statiques
 ├── llms.txt               # Description sémantique pour agents IA
 ├── manifest.json          # Web App Manifest PWA installable
+├── netlify.toml           # Configuration de déploiement et headers Netlify
 ├── notes.md               # Version texte jumelle de la page d'accueil
 ├── offline.html           # Page de secours lors d'échecs de navigation
 ├── robots.txt             # Directives pour moteurs de recherche et bots IA
 ├── serve.json             # Configuration du serveur statique local
+├── sitemap.xml            # Sitemap XML pour moteurs de recherche
 ├── style.css              # Styles responsive mobile-first, thème moderne
-├── sw.js                  # Service Worker (Cache First, SWR, Background Sync)
-└── _headers               # En-têtes HTTP pour déploiement Netlify
+└── sw.js                  # Service Worker (Cache First, SWR, Background Sync)
 ```
 
 ---
 
 ## 🛠️ Déploiement en production
 
-L'application est prête à être déployée en 1 clic sur **Vercel** ou **Netlify** :
-- **Vercel** : `vercel --prod`
+L'application est déployée en production sur Netlify : **[https://collecbox.netlify.app](https://collecbox.netlify.app)**.
+
+Déploiements alternatifs prêts en 1 clic :
 - **Netlify** : `netlify deploy --prod --dir=.`
+- **Vercel** : `vercel --prod`
 - **GitHub Pages** : Publier directement le dossier avec HTTPS automatique.
